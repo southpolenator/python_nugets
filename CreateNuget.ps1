@@ -24,6 +24,17 @@ if (-not (Test-Path -Path $nugetExePath))
     $webClient.DownloadFile($nugetDownloadUrl, $nugetExePath);
 }
 
+# Ensure we have icon in temp folder
+$iconDownloadUrl = "https://www.python.org/static/favicon.ico"
+$iconName = "flavicon.ico"
+$iconPath = "$temp\$iconName"
+if (-not (Test-Path -Path $iconPath))
+{
+    Write-Host "Downloading icon from '$iconDownloadUrl'"
+    $webClient = New-Object System.Net.WebClient
+    $webClient.DownloadFile($iconDownloadUrl, $iconPath);
+}
+
 # Create simple props file that will share python tools location
 $propsName = "$packageId.props"
 $propsPath = "$temp\$propsName"
@@ -31,7 +42,7 @@ $propsPath = "$temp\$propsName"
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <PythonFull$bitVersionString>`$(MSBuildThisFileDirectory)..\..\Tools</PythonFull$bitVersionString>
+    <PythonFull$bitVersionString>`$(MSBuildThisFileDirectory)..\..\tools</PythonFull$bitVersionString>
   </PropertyGroup>
 </Project>
 "@ | Out-File -FilePath $propsPath
@@ -49,13 +60,14 @@ Write-Host "Creating nuspec '$nuspecPath'..."
     <authors>Python Software Foundation</authors>
     <owners>Python Software Foundation</owners>
     <projectUrl>https://www.python.org/</projectUrl>
-    <iconUrl>https://www.python.org/static/favicon.ico</iconUrl>
+    <icon>$iconName</icon>
     <repository type="git" url="https://github.com/Python/CPython.git" />
     <license type="file">Tools\LICENSE.txt</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>python</tags>
   </metadata>
   <files>
+    <file src="$iconPath" target="" />
     <file src="$extractedPath\**" target="tools" />
     <file src="$propsPath" target="build\native" />
   </files>
@@ -64,7 +76,7 @@ Write-Host "Creating nuspec '$nuspecPath'..."
 
 # Create nuget package
 Write-Host "Packaging '$extractedPath'..."
-Start-Process -FilePath $nugetExePath -ArgumentList "pack `"$nuspecPath`" -OutputDirectory `"$temp`"" -Wait
+Start-Process -FilePath $nugetExePath -ArgumentList "pack `"$nuspecPath`" -OutputDirectory `"$temp`"" -Wait -NoNewWindow
 
 # Delete temporary files
 Remove-Item -Path $propsPath
