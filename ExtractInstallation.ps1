@@ -80,7 +80,7 @@ function ExtractPython([string]$exePath, [string]$installationPath, [string]$ext
     Write-Host "Copy installation to '$extractedPath'...";
     if (Test-Path $extractedPath)
     {
-        Remove-Item -Path $extractedPath
+        Remove-Item -Path $extractedPath -Recurse
     }
     Copy-Item -Path $installationPath -Destination $extractedPath -Recurse
 

@@ -56,7 +56,7 @@ Write-Host "Creating nuspec '$nuspecPath'..."
     <tags>python</tags>
   </metadata>
   <files>
-    <file src="$extractedPath\**" target="Tools" />
+    <file src="$extractedPath\**" target="tools" />
     <file src="$propsPath" target="build\native" />
   </files>
 </package>
