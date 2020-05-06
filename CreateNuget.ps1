@@ -27,12 +27,16 @@ if (-not (Test-Path -Path $nugetExePath))
 # Ensure we have icon in temp folder
 $iconDownloadUrl = "https://www.python.org/static/favicon.ico"
 $iconName = "flavicon.ico"
-$iconPath = "$temp\$iconName"
-if (-not (Test-Path -Path $iconPath))
+$iconPngName = "flavicon.png"
+$iconPngPath = "$temp\$iconPngName"
+if (-not (Test-Path -Path $iconPngPath))
 {
     Write-Host "Downloading icon from '$iconDownloadUrl'"
+    $iconPath = "$temp\$iconName"
     $webClient = New-Object System.Net.WebClient
     $webClient.DownloadFile($iconDownloadUrl, $iconPath);
+    $icon = New-Object System.Drawing.Bitmap $iconPath
+    $icon.Save($iconPngPath)
 }
 
 # Create simple props file that will share python tools location
@@ -49,6 +53,7 @@ $propsPath = "$temp\$propsName"
 
 # Create nuspec
 $nuspecPath = "$temp\$packageName.nuspec"
+$bitsString = if ($x64Version) { "64-bit" } else { "32-bit" }
 Write-Host "Creating nuspec '$nuspecPath'..."
 @"
 <?xml version="1.0" encoding="utf-8" ?>
@@ -56,18 +61,19 @@ Write-Host "Creating nuspec '$nuspecPath'..."
   <metadata>
     <id>$packageId</id>
     <version>$pythonVersion</version>
-    <description>Python environment extracted from official installation for Windows.</description>
+    <title>Python full environment</title>
+    <description>Python environment extracted from official $bitsString installation for Windows.</description>
     <authors>Python Software Foundation</authors>
     <owners>Python Software Foundation</owners>
     <projectUrl>https://www.python.org/</projectUrl>
-    <icon>$iconName</icon>
+    <icon>$iconPngName</icon>
     <repository type="git" url="https://github.com/Python/CPython.git" />
-    <license type="file">Tools\LICENSE.txt</license>
+    <license type="file">tools\LICENSE.txt</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>python</tags>
   </metadata>
   <files>
-    <file src="$iconPath" target="" />
+    <file src="$iconPngPath" target="" />
     <file src="$extractedPath\**" target="tools" />
     <file src="$propsPath" target="build\native" />
   </files>
