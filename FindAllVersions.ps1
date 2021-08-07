@@ -50,10 +50,10 @@ $compareVersion = ExtractVersion -version $minimumVersion
 
 # Get all available python versions and links to their "ftp" directory
 $rootHtml = Invoke-WebRequest -Uri $pythonFtpUrl
-$versionDirectoryLinks = $rootHtml.Links | Where-Object { $_.innerText -match '^\d+[.]\d+([.]\d+)?/$' }
+$versionDirectoryLinks = $rootHtml.Links | Where-Object { $_.href -match '^\d+[.]\d+([.]\d+)?/$' }
 
 # Filter versions
-$versions = $versionDirectoryLinks | Select-Object -ExpandProperty innerText | ForEach { $_.Trim("/") }
+$versions = $versionDirectoryLinks | Select-Object -ExpandProperty href | ForEach { $_.Trim("/") }
 $versions = $versions | Where-Object { (CompareVersions -version1 (ExtractVersion -version $_) -version2 $compareVersion ) -ge 0 }
 
 # Print all versions
