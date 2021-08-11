@@ -12,6 +12,6 @@ $temp = Resolve-Path -Path temp
 $extractedPath64 = "$temp\python64-full-$version"
 if (Test-Path -Path $extractedPath64)
 {
-    & "$PSScriptRoot\CreateNuget.ps1" -extractedPath $extractedPath64 -pythonVersion $version -x64Version
-    Remove-Item -Path $extractedPath64 -Recurse
+    #& "$PSScriptRoot\CreateNuget.ps1" -extractedPath $extractedPath64 -pythonVersion $version -x64Version
+    #Remove-Item -Path $extractedPath64 -Recurse
 }
